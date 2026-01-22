@@ -88,7 +88,7 @@ class PusherChannelsFlutter {
 
   Future<void> init({
     required String apiKey,
-    required String cluster,
+    String? cluster,
     String? host,
     int? wsPort,
     int? wssPort,
@@ -119,6 +119,11 @@ class PusherChannelsFlutter {
         onAuthorizer,
     Function(String channelName, int subscriptionCount)? onSubscriptionCount,
   }) async {
+    // Validation: soit cluster, soit host doit être fourni
+    if (cluster == null && host == null) {
+      throw ArgumentError('Either cluster or host must be provided');
+    }
+
     methodChannel.setMethodCallHandler(_platformCallHandler);
     this.onConnectionStateChange = onConnectionStateChange;
     this.onError = onError;
