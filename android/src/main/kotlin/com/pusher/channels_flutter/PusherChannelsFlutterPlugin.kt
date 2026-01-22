@@ -101,10 +101,17 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 pusher!!.disconnect()
             }
             val options = PusherOptions()
-            if (call.argument<String>("cluster") != null) options.setCluster(call.argument("cluster"))
-            if (call.argument<String>("host") != null) options.setHost(call.argument("host")!!)
-            if (call.argument<Int>("wsPort") != null) options.setWsPort(call.argument("wsPort")!!)
-            if (call.argument<Int>("wssPort") != null) options.setWssPort(call.argument("wssPort")!!)
+
+            // ✅ Priorité à host sur cluster pour les serveurs custom
+            if (call.argument<String>("host") != null) {
+                options.setHost(call.argument("host")!!)
+                // Configurer les ports seulement si host custom
+                if (call.argument<Int>("wsPort") != null) options.setWsPort(call.argument("wsPort")!!)
+                if (call.argument<Int>("wssPort") != null) options.setWssPort(call.argument("wssPort")!!)
+            } else if (call.argument<String>("cluster") != null) {
+                // Utiliser cluster seulement si pas de host custom
+                options.setCluster(call.argument("cluster"))
+            }
             if (call.argument<Boolean>("useTLS") != null) options.isUseTLS =
                 call.argument("useTLS")!!
             if (call.argument<Long>("activityTimeout") != null) options.activityTimeout =

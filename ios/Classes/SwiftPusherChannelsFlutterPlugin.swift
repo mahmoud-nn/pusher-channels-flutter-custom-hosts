@@ -46,6 +46,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
       authMethod = .authorizer(authorizer: self)
     }
     var host: PusherHost = .defaultHost
+    // ✅ Priorité à host sur cluster pour les serveurs custom
     if args["host"] is String {
       host = .host(args["host"] as! String)
     } else if args["cluster"] != nil {
@@ -58,12 +59,14 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     var port: Int
     if useTLS {
       port = 443
-      if args["wssPort"] is Int {
+      // Configurer le port seulement si host custom
+      if args["host"] is String && args["wssPort"] is Int {
         port = args["wssPort"] as! Int
       }
     } else {
       port = 80
-      if args["wsPort"] is Int {
+      // Configurer le port seulement si host custom
+      if args["host"] is String && args["wsPort"] is Int {
         port = args["wsPort"] as! Int
       }
     }
